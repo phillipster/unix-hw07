@@ -1,5 +1,5 @@
-# ChatFeliPT
-### hw05 - by Felipe Muggiati Feldman
+# ChatFeliPThread
+### hw07 - by Felipe Muggiati Feldman
 
 ## Usage
 This program is split into two components: a server and client.
