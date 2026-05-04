@@ -1,9 +1,9 @@
-//
-// Created by Felipe Feldman on 5/2/26.
-//
+/*
+ *  ChatFeliPThread - data_structures.c
+ *  Felipe Muggiati Feldman
+ */
 
 #include "data_structures.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -1,5 +1,6 @@
 /*
  *  ChatFeliPThread - client.c
+ *  Felipe Muggiati Feldman
  */
 
 #include <stdio.h>

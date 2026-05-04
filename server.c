@@ -1,6 +1,7 @@
 /*
  *  ChatFeliPThread - server.c
  *  a semi-sophisticated server for a multi-threaded chat room
+ *  by Felipe Muggiati Feldman
  */
 #include "data_structures.h"
 #include <stdio.h>
@@ -208,7 +209,7 @@ void display_others(Vector* v, User* u) {
     ssize_t total = 0;
     if (v->size <= 1) {
         total = snprintf(out, MAX_LINE, "No other connected users.\n");
-    } else {v
+    } else {
         total = snprintf(out, MAX_LINE, "Others present: ");
         for (size_t i = 0; i < v->size-1; ++i) {
             if (v->data[i] == u) {

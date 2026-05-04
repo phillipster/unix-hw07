@@ -1,6 +1,7 @@
-//
-// Created by Felipe Feldman on 5/2/26.
-//
+/*
+*  ChatFeliPThread - data_structures.h
+*  Felipe Muggiati Feldman
+ */
 
 #ifndef HW07_DATA_STRUCTURES_H
 #define HW07_DATA_STRUCTURES_H
