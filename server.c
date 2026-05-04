@@ -48,6 +48,7 @@ int main(int argc, char** argv) {
         exit(1);
     }
 
+    pthread_detach(msg_buffer);
     // parse args
     parse_args(argc, argv, &port_num);
     // open socket
