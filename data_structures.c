@@ -7,14 +7,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// initialize queue
 void queue_init(Queue* q) {
     q->head = NULL;
     q->tail = NULL;
     q->size = 0;
     pthread_mutex_init(&q->lock, NULL);
     pthread_cond_init(&q->if_empty, NULL);
-}
+}  // queue_init
 
+// add message to queue
 void queue_put(Queue* q, Message msg) {
     pthread_mutex_lock(&q->lock);
 
@@ -36,7 +38,7 @@ void queue_put(Queue* q, Message msg) {
 
     pthread_cond_signal(&q->if_empty);
     pthread_mutex_unlock(&q->lock);
-}
+}  // queue_put
 
 Message queue_get(Queue* q) {
     pthread_mutex_lock(&q->lock);

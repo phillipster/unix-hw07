@@ -119,13 +119,15 @@ User* create_user(void) {
     return new_user;
 }  // create_user
 
-// free's a user's name, removes the user from the Vector of users
+// free's a user's name, removes the user from the Vector of users, closes fd
 void user_cleanup(User* u) {
     free(u->name);
     vector_remove(u->v, u);
+    close(u->user_fd);
     free(u);
-}  //
+}  // user_cleanup
 
+// thread responsible for sending messages to each connected client
 void* message_sender_service(void* arg) {
     MessageSenderArgs* msa = arg;
     Queue* q = msa->q;
@@ -148,8 +150,9 @@ void* message_sender_service(void* arg) {
         pthread_mutex_unlock(&v->lock);
         free(next.text);
     }
-}
+}  // message_sender_service
 
+// this function runs in its own thread! one thread per user
 void* client_service(void* arg) {
     User* u = arg;
     Vector* v = u->v;
@@ -211,7 +214,7 @@ void display_others(Vector* v, User* u) {
         total = snprintf(out, MAX_LINE, "No other connected users.\n");
     } else {
         total = snprintf(out, MAX_LINE, "Others present: ");
-        for (size_t i = 0; i < v->size-1; ++i) {
+        for (size_t i = 0; i < v->size; ++i) {
             if (v->data[i] == u) {
                 continue;
             }
@@ -223,7 +226,7 @@ void display_others(Vector* v, User* u) {
             if (total >= MAX_LINE - 1) break;
         }
 
-        if (total > 2 && out[total - 2] == ',') {
+        if (total > 2 && out[total - 2] == ',') {  // get rid of last comma lol
             out[total - 2] = '\n';
             out[total - 1] = '\0';
             total--;
@@ -250,6 +253,7 @@ void message_collector(User* u) {
         if (m.text == NULL) {
             perror("client_service::malloc");
             user_cleanup(u);
+            pthread_exit(NULL);
         }
         m.size = n_write;
         snprintf(m.text, n_write+1, "%s> %s", u->name, input_buffer);
@@ -262,6 +266,7 @@ void message_collector(User* u) {
         if (m.text == NULL) {
             perror("client_service::disconnected::malloc");
             user_cleanup(u);
+            pthread_exit(NULL);
         }
         m.size = n_write;
         snprintf(m.text, n_write+1, "%s has left the chat.\n", u->name);

@@ -18,7 +18,6 @@
 #define	LISTENQ	1024
 #define PORT_NUM 13000
 #define MAX_PORT_NUM 65535  // maximum acceptable user port
-#define TIMEOUT_SECS 67  // lmao
 
 int parse_user_port(const char* input);
 void chat(int sockfd);
