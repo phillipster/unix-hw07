@@ -107,7 +107,7 @@ void handle_args(int argc, char** argv,
     }
     if (strlen(argv[1]) > MAX_USERNAME) {
         fputs("username must not exceed 64 characters!\n"
-              ": client <username> [-p port] [-a address]\n", stderr);
+              "usage: client <username> [-p port] [-a address]\n", stderr);
         exit(1);
     }
     *username = argv[1];
@@ -183,7 +183,7 @@ void chat(int sockfd) {
 }  // chat
 
 int receive_message(int sockfd) {
-    char buffer[MAX_LINE];
+    char buffer[MAX_LINE+1];
     ssize_t n = read(sockfd, buffer, MAX_LINE);
     if (n < 0) {
         perror("read error");

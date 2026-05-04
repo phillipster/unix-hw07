@@ -8,30 +8,34 @@
 
 #include <pthread.h>
 
+// for convenience's sake, typedefs on the structs
+// (as well as resolving cyclic association)
+
 typedef struct user User;
 typedef struct vector Vector;
 typedef struct queue Queue;
 typedef struct message Message;
 typedef struct node Node;
 
+// also holds Vector* and Queue* for reuse as
 struct user {
     int user_fd;
     pthread_t tid;
     char* name;
     Vector* v;
     Queue* q;
-};
+};  // User
 
 struct message {
     User* user;
     char* text;
     size_t size;
-};
+};  // Message
 
 struct node {
     Message message;
     struct node* next;
-};
+};  // Node
 
 struct queue {
     Node* head;
@@ -39,7 +43,7 @@ struct queue {
     size_t size;
     pthread_mutex_t lock;
     pthread_cond_t if_empty;
-};
+};  // Queue
 
 struct vector {
     User** data;
@@ -47,20 +51,21 @@ struct vector {
     size_t cap;
     pthread_mutex_t lock;
     pthread_cond_t if_empty;
-};
+};  // Vector
 
 typedef struct {
     Queue* q;
     Vector* v;
 } MessageSenderArgs;
 
-
+// queue methods (thread-safe)
 void queue_init(Queue* q);
 void queue_put(Queue* q, Message msg);
 Message queue_get(Queue* q);
 void queue_cleanup(Queue* q);
 void queue_print(Queue* q);
 
+// vector methods (thread-safe)
 void vector_init(Vector* v);
 void vector_push_back(Vector* v, User* user);
 void vector_remove(Vector* v, User* u);

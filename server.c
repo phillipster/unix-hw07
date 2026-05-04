@@ -154,24 +154,27 @@ void* message_sender_service(void* arg) {
 
 // this function runs in its own thread! one thread per user
 void* client_service(void* arg) {
-    User* u = arg;
+    User* u = arg;  // treat the provided arg as a User*
     Vector* v = u->v;
     Queue* q = u->q;
 
     u->tid = pthread_self();
     if (set_user_name(u) == -1) {
+        close(u->user_fd);
+        free(u);  // user_cleanup is unnecessary, as it hasn't been added yet
         pthread_exit(NULL);
     }
-    printf("User \"%s\" has connected\n", u->name);
-    fflush(stdout);
-    vector_push_back(v, u);
-    announce_arrival(q, u);
-    display_others(v, u);
-    message_collector(u);
+    printf("User \"%s\" has connected\n", u->name);  // server-side logging
+    fflush(stdout);  // resolves backed-up buffer
+    vector_push_back(v, u);  // add user
+    announce_arrival(q, u);  // inform their peers
+    display_others(v, u);  // inform them OF their peers
+    message_collector(u);  // enter message collector (forever)
 
     return NULL;
-}
+}  // client_service
 
+// heap-allocates user name
 int set_user_name(User* u) {
     char user_buffer[MAX_USERNAME + 1] = {0};
     ssize_t n_read = read(u->user_fd, user_buffer, MAX_USERNAME);
@@ -186,20 +189,24 @@ int set_user_name(User* u) {
         return -1;
     }
     return 0;
-}
+}  // set_user_name
 
+// announce arrival of a new
 void announce_arrival(Queue* q, User* u) {
     Message m = {u};
     ssize_t n_write = snprintf(NULL, 0, "%s has entered the chat!\n", u->name);
     m.text = malloc(n_write+1);
     if (m.text == NULL) {
         perror("announce_arrival::malloc");
+        return;
+        // v2 would introduce a better alternative than failing silently...
     }
     m.size = n_write;
     snprintf(m.text, n_write+1, "%s has entered the chat!\n", u->name);
     queue_put(q, m);
-}
+}  // announce_arrival
 
+// deals with hair-pulling C-string logic to save on write() calls
 void display_others(Vector* v, User* u) {
     pthread_mutex_lock(&v->lock);
 
@@ -238,8 +245,9 @@ void display_others(Vector* v, User* u) {
 
     pthread_mutex_unlock(&v->lock);
     free(out);
-}
+}  // display_others
 
+// listens using read(), and adds message to the queue
 void message_collector(User* u) {
     Queue* q = u->q;
     ssize_t n_read;
@@ -276,7 +284,7 @@ void message_collector(User* u) {
         user_cleanup(u);
         pthread_exit(NULL);
     }
-}
+}  // message_collector
 
 
 // argument parsers (unchanged)
