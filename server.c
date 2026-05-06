@@ -56,7 +56,6 @@ int main(int argc, char** argv) {
 
     // consider the code below...unfixed!
 
-    /*
     int optval = 1;
     if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR,
                                         &optval, sizeof(optval)) < 0) {
@@ -64,7 +63,6 @@ int main(int argc, char** argv) {
         close(listenfd);
         exit(1);
     }
-    */
 
 
 
