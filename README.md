@@ -47,5 +47,4 @@ signal handling support, which will be added at a later date).
 On the server side, there is no command line interface at all. Notifications
 (logging, as described by the spec) will appear every time a new user connects
 or a previous user disconnects from the server. Hitting Ctrl + C will terminate
-the server and all its users, who are configured to terminate whenever they
-lose connection to the server.
+the server and all its users, who are configured to terminate whenever
