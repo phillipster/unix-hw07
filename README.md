@@ -48,10 +48,3 @@ On the server side, there is no command line interface at all. Notifications
 (logging, as described by the spec) will appear every time a new user connects
 or a previous user disconnects from the server. Hitting Ctrl + C will terminate
 the server and all its users, who are configured to terminate whenever
-
-
-`bind error: Address already in use`
-If this happens, close all open terminal instances and start over. It was
-not yet covered in lecture how to perform port reuse, though I imagine that
-with proper signal handling, there is a way to properly close the socket. Happy
-monologuing!

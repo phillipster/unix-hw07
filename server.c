@@ -49,12 +49,8 @@ int main(int argc, char** argv) {
     }
 
     pthread_detach(msg_buffer);
-    // parse args
     parse_args(argc, argv, &port_num);
-    // open socket
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
-
-    // consider the code below...unfixed!
 
     int optval = 1;
     if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR,
@@ -64,20 +60,17 @@ int main(int argc, char** argv) {
         exit(1);
     }
 
-
-
-    // deal with insufferable struct
     memset(&servaddr, 0, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port = htons(port_num);
-    // error checking for bind
+
     if (bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
         perror("bind");
         close(listenfd);
         exit(1);
     }
-    // error checking for listen
+
     if (listen(listenfd, LISTENQ) < 0) {
         perror("listen");
         close(listenfd);
