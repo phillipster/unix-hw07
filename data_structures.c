@@ -22,7 +22,7 @@ void queue_put(Queue* q, Message msg) {
 
     Node* new_tail = malloc(sizeof(Node));
     if (new_tail == NULL) {
-        perror("malloc");
+        perror("queue::malloc");
         exit(1);
     }
     new_tail->message = msg;
@@ -108,7 +108,7 @@ void vector_push_back(Vector* v, User* user) {
         User** temp = realloc(v->data, sizeof(User*) * new_cap);
         if (!temp) {
             perror("Vector::realloc");
-            return;
+            exit(1);
         }
         v->data = temp;
         v->cap = new_cap;

@@ -52,6 +52,7 @@ int main(int argc, char** argv) {
     parse_args(argc, argv, &port_num);
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
+    /*
     int optval = 1;
     if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR,
                                         &optval, sizeof(optval)) < 0) {
@@ -59,6 +60,7 @@ int main(int argc, char** argv) {
         close(listenfd);
         exit(1);
     }
+    */
 
     memset(&servaddr, 0, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
@@ -190,8 +192,7 @@ void announce_arrival(Queue* q, User* u) {
     m.text = malloc(n_write+1);
     if (m.text == NULL) {
         perror("announce_arrival::malloc");
-        return;
-        // v2 would introduce a better alternative than failing silently...
+        exit(1);
     }
     m.size = n_write;
     snprintf(m.text, n_write+1, "%s has entered the chat!\n", u->name);
@@ -202,41 +203,34 @@ void announce_arrival(Queue* q, User* u) {
 void display_others(Vector* v, User* u) {
     pthread_mutex_lock(&v->lock);
 
-    char* out = malloc(MAX_LINE);
-    if (out == NULL) {
-        perror("display_others::malloc");
+    char* buf;
+    size_t size;
+    FILE* sb = open_memstream(&buf, &size);
+    if (sb == NULL) {
+        perror("open_memstream");
         pthread_mutex_unlock(&v->lock);
         return;
     }
-    ssize_t total = 0;
-    if (v->size <= 1) {
-        total = snprintf(out, MAX_LINE, "No other connected users.\n");
-    } else {
-        total = snprintf(out, MAX_LINE, "Others present: ");
-        for (size_t i = 0; i < v->size; ++i) {
-            if (v->data[i] == u) {
-                continue;
-            }
-            ssize_t written = snprintf(out + total, MAX_LINE - total,
-                                                    "%s, ", v->data[i]->name);
-            if (written > 0) {
-                total += written;
-            }
-            if (total >= MAX_LINE - 1) break;
-        }
-
-        if (total > 2 && out[total - 2] == ',') {  // get rid of last comma lol
-            out[total - 2] = '\n';
-            out[total - 1] = '\0';
-            total--;
-        }
-    }
-    if (write(u->user_fd, out, (size_t)total) < 0) {
+    if (u->v->size == 1) {
+       fprintf(sb, "No other currently connected users.\n");
+   } else {
+       fprintf(sb, "Currently connected users:\n[");
+       const User* first = u->v->data[0];
+       if (first != u)
+           fprintf(sb, "%s", first->name);
+       for (size_t i = 1; i < u->v->size; ++i) {
+           if (u->v->data[i] != u) {
+               fprintf(sb, ", %s", u->v->data[i]->name);
+           }
+       }
+       fputs("]\n", sb);
+   }
+    fflush(sb);
+    if (write(u->user_fd, buf, size) < 0) {
         perror("display_others::write");
     }
-
+    free(buf);
     pthread_mutex_unlock(&v->lock);
-    free(out);
 }  // display_others
 
 // listens using read(), and adds message to the queue
