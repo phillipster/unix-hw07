@@ -1,4 +1,6 @@
-/server
-/client
+/chat-room/server
+/chat-room/client
 /resources
 /scratch.c
+/scratch.s
+/test

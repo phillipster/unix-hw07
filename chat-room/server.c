@@ -3,7 +3,7 @@
  *  a semi-sophisticated server for a multi-threaded chat room
  *  by Felipe Muggiati Feldman
  */
-#include "data_structures.h"
+#include "../data_structures.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>

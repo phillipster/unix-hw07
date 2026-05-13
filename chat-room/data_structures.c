@@ -3,7 +3,7 @@
  *  Felipe Muggiati Feldman
  */
 
-#include "data_structures.h"
+#include "../data_structures.h"
 #include <stdio.h>
 #include <stdlib.h>
 
